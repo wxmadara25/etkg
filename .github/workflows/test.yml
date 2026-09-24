@@ -89,10 +89,15 @@ jobs:
           cd ${{ github.workspace }}
           sed -i 's/\(last_test-\)[0-9]\{2\}.[0-9]\{2\}.[0-9]\{4\}_[0-9]\{2\}:[0-9]\{2\}_UTC+3/\1'"$(date -u --date='3 hours' +"%d.%m.%Y_%H:%M_UTC+3")"'/' README.md
           sudo rm -r etkg
-          git pull
-          git commit -m "Update test time" -a
+          git checkout "${GITHUB_REF_NAME}" || git checkout -b "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
+          git pull --ff-only origin "${GITHUB_REF_NAME}"
+          if ! git diff --quiet README.md; then
+            git commit -m "Update test time" -a
+          else
+            echo "No README changes detected; skipping commit."
+          fi
       - name: Push changes to the repo
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PAT }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.ref_name }}
