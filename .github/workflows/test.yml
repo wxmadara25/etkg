@@ -98,11 +98,14 @@ jobs:
           if ! git diff --quiet README.md || ! git diff --cached --quiet README.md; then
             git add README.md
             git commit -m "Update test time"
+            echo "README_COMMITTED=true" >> $GITHUB_ENV
           else
             echo "No README changes detected; skipping commit."
+            git checkout -- README.md
+            echo "README_COMMITTED=false" >> $GITHUB_ENV
           fi
       - name: Push changes to the repo
-        if: github.ref_type == 'branch'
+        if: github.ref_type == 'branch' && env.README_COMMITTED == 'true'
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.PAT }}
