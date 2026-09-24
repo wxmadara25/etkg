@@ -87,11 +87,8 @@ jobs:
           fi
           echo 
           cd ${{ github.workspace }}
-          if git fetch origin "${GITHUB_REF_NAME}"; then
-            git checkout -B "${GITHUB_REF_NAME}" FETCH_HEAD
-          else
-            git checkout -B "${GITHUB_REF_NAME}"
-          fi
+          git fetch origin "${GITHUB_REF_NAME}"
+          git checkout -B "${GITHUB_REF_NAME}" FETCH_HEAD
           sed -i 's/\(last_test-\)[0-9]\{2\}.[0-9]\{2\}.[0-9]\{4\}_[0-9]\{2\}:[0-9]\{2\}_UTC+3/\1'"$(date -u --date='3 hours' +"%d.%m.%Y_%H:%M_UTC+3")"'/' README.md
           sudo rm -r etkg
           if ! git diff --quiet README.md || ! git diff --cached --quiet README.md; then
