@@ -99,7 +99,7 @@ jobs:
           if git show-ref --verify --quiet "refs/remotes/origin/${GITHUB_REF_NAME}"; then
             git pull --ff-only origin "${GITHUB_REF_NAME}"
           fi
-          if ! git diff --quiet README.md; then
+          if ! git diff --quiet README.md || ! git diff --cached --quiet README.md; then
             git commit -m "Update test time" -a
           else
             echo "No README changes detected; skipping commit."
