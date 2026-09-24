@@ -103,7 +103,7 @@ jobs:
           fi
       - name: Push changes to the repo
         if: github.ref_type == 'branch'
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.PAT }}
           branch: ${{ github.ref_name }}
