@@ -89,8 +89,16 @@ jobs:
           cd ${{ github.workspace }}
           sed -i 's/\(last_test-\)[0-9]\{2\}.[0-9]\{2\}.[0-9]\{4\}_[0-9]\{2\}:[0-9]\{2\}_UTC+3/\1'"$(date -u --date='3 hours' +"%d.%m.%Y_%H:%M_UTC+3")"'/' README.md
           sudo rm -r etkg
-          git checkout "${GITHUB_REF_NAME}" || git checkout -b "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
-          git pull --ff-only origin "${GITHUB_REF_NAME}"
+          if ! git checkout "${GITHUB_REF_NAME}"; then
+            if git show-ref --verify --quiet "refs/remotes/origin/${GITHUB_REF_NAME}"; then
+              git checkout -b "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
+            else
+              git checkout -B "${GITHUB_REF_NAME}"
+            fi
+          fi
+          if git show-ref --verify --quiet "refs/remotes/origin/${GITHUB_REF_NAME}"; then
+            git pull --ff-only origin "${GITHUB_REF_NAME}"
+          fi
           if ! git diff --quiet README.md; then
             git commit -m "Update test time" -a
           else
